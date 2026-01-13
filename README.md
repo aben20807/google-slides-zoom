@@ -2,6 +2,8 @@
 
 A Chrome extension that allows you to zoom Google Slides presentations for better viewing during presentations.
 
+![Image](https://github.com/user-attachments/assets/55f1a0a2-aaa9-4486-8e7e-27d4541da911)
+
 ## Features
 
 - **Zoom In**: Press `Ctrl + +` or scroll up with `Ctrl + Scroll`
@@ -28,6 +30,7 @@ A Chrome extension that allows you to zoom Google Slides presentations for bette
    - **Ctrl + Mouse Scroll**: Smooth zoom in/out
    - **Ctrl + 0**: Reset to normal size
    - **Escape**: Reset to normal size (if zoomed)
+   - **Mouse Movement**: Pan around the slide when zoomed in
 
 ## Technical Details
 
@@ -44,3 +47,15 @@ The extension applies CSS `transform: scale()` to the `.sketchyViewerContent` el
 ## Optional: Add an Icon
 
 To add a custom icon, place a 128x128px PNG image named `icon.png` in this folder. Otherwise, you can remove the `icons` section from [manifest.json](manifest.json).
+
+## Disclaimer
+
+This project is not provided by Google (Alphabet Inc.)
+
+## Acknowledgements
+
+GitHub Copilot (Claude Sonnet 4.5) implemented most of the features
+
+## License
+
+Apache 2.0 License
