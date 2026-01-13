@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Google Slides Zoom",
+  "version": "1.0.0",
+  "description": "Zoom Google Slides presentations using Ctrl+/- or Ctrl+Scroll",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://docs.google.com/presentation/*",
+        "https://docs.google.com/presentation/*/present*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ]
+}
