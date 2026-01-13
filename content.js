@@ -13,14 +13,87 @@
   const SCALE_STEP = 0.1;
   const SCROLL_SCALE_STEP = 0.2;
   let isApplyingZoom = false;
+  
+  // Pan variables
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let lastPanX = 0;
+  let lastPanY = 0;
+  let panOverlay = null;
 
   // Function to find the viewer content element
   function getViewerContent() {
     return document.querySelector('.sketchyViewerContent');
   }
 
+  // Function to create/remove pan overlay
+  function updatePanOverlay() {
+    if (currentScale > 1.0) {
+      // Create overlay if it doesn't exist
+      if (!panOverlay) {
+        panOverlay = document.createElement('div');
+        panOverlay.id = 'slides-zoom-overlay';
+        panOverlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 9999;
+          cursor: grab;
+        `;
+        
+        // Add event listeners to overlay
+        panOverlay.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          lastPanX = panX;
+          lastPanY = panY;
+          panOverlay.style.cursor = 'grabbing';
+          e.preventDefault();
+        });
+        
+        panOverlay.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
+          
+          panX = lastPanX + deltaX;
+          panY = lastPanY + deltaY;
+          
+          updatePan();
+          e.preventDefault();
+        });
+        
+        panOverlay.addEventListener('mouseup', (e) => {
+          isDragging = false;
+          panOverlay.style.cursor = 'grab';
+          e.preventDefault();
+        });
+        
+        panOverlay.addEventListener('mouseleave', () => {
+          isDragging = false;
+          panOverlay.style.cursor = 'grab';
+        });
+        
+        document.body.appendChild(panOverlay);
+      }
+    } else {
+      // Remove overlay when not zoomed
+      if (panOverlay) {
+        panOverlay.remove();
+        panOverlay = null;
+      }
+    }
+  }
+  
   // Function to apply zoom with smooth transition
-  function applyZoom(scale) {
+  function applyZoom(scale, resetPan = false) {
     if (isApplyingZoom) return;
     isApplyingZoom = true;
 
@@ -32,15 +105,31 @@
 
     currentScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
     
+    // Reset pan when zooming back to 1.0 or if requested
+    if (currentScale === 1.0 || resetPan) {
+      panX = 0;
+      panY = 0;
+    }
+    
     viewer.style.transition = 'transform 0.2s ease-out';
-    viewer.style.transform = `scale(${currentScale})`;
+    viewer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
     viewer.style.transformOrigin = 'center center';
     
     showZoomIndicator(currentScale);
+    updatePanOverlay();
     
     setTimeout(() => {
       isApplyingZoom = false;
     }, 50);
+  }
+  
+  // Function to update pan position
+  function updatePan() {
+    const viewer = getViewerContent();
+    if (!viewer) return;
+    
+    viewer.style.transition = 'none';
+    viewer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
   }
 
   // Function to show zoom level indicator
@@ -79,7 +168,9 @@
 
   // Function to reset zoom
   function resetZoom() {
-    applyZoom(1.0);
+    panX = 0;
+    panY = 0;
+    applyZoom(1.0, true);
   }
 
   // Handle keyboard events
