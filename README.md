@@ -1,52 +1,38 @@
-# Google Slides Zoom Extension
+# Google Slides Zoom
 
-A Chrome extension that allows you to zoom Google Slides presentations for better viewing during presentations.
+A Chrome extension that enables zooming in Google Slides presentations during presentation mode.
 
-![Image](https://github.com/user-attachments/assets/55f1a0a2-aaa9-4486-8e7e-27d4541da911)
+![Image](https://github.com/user-attachments/assets/9c51ae25-5b1d-4559-a788-82ebb2189dd3)
 
 ## Features
 
-- **Zoom In**: Press `Ctrl + +` or scroll up with `Ctrl + Scroll`
-- **Zoom Out**: Press `Ctrl + -` or scroll down with `Ctrl + Scroll`
-- **Reset Zoom**: Press `Ctrl + 0` or `Escape`
-- **Smooth Transitions**: All zoom actions include smooth animations
-- **Visual Feedback**: Temporary zoom level indicator shows current zoom percentage
-- **Wide Range**: Zoom from 50% to 300%
+- Zoom in/out with keyboard shortcuts or mouse scroll
+- Smooth zoom animations with visual feedback
+- Pan around slides when zoomed in
+- Zoom range: 50% to 300%
 
 ## Installation
 
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable "Developer mode" in the top right corner
-3. Click "Load unpacked"
-4. Select this folder (`google-slides-zoom`)
-5. The extension is now installed and will work on Google Slides presentations
+1. Navigate to `chrome://extensions/` in Chrome
+2. Enable "Developer mode"
+3. Click "Load unpacked" and select this folder
+4. The extension will activate on Google Slides presentations
 
 ## Usage
 
-1. Open any Google Slides presentation in presentation mode
-2. Use the following controls:
-   - **Ctrl + +** (or **Ctrl + =**): Zoom in
-   - **Ctrl + -**: Zoom out
-   - **Ctrl + Mouse Scroll**: Smooth zoom in/out
-   - **Ctrl + 0**: Reset to normal size
-   - **Escape**: Reset to normal size (if zoomed)
-   - **Mouse Movement**: Pan around the slide when zoomed in
+- **Ctrl + +** or **Ctrl + =**: Zoom in
+- **Ctrl + -**: Zoom out
+- **Ctrl + Mouse Scroll**: Smooth zoom
+- **Ctrl + 0** or **Escape**: Reset zoom
+- **Mouse Movement**: Pan when zoomed in
 
 ## Technical Details
 
-The extension applies CSS `transform: scale()` to the `.sketchyViewerContent` element with smooth transitions for a better user experience.
+Applies CSS `transform: scale()` to `.sketchyViewerContent` with smooth transitions.
 
-## Notes
+## Optional Icon
 
-- Works only on Google Slides presentation URLs (https://docs.google.com/presentation/*)
-- The zoom level indicator appears temporarily in the top-right corner
-- Minimum zoom: 50%
-- Maximum zoom: 300%
-- All zoom operations are smooth with 0.2s transitions
-
-## Optional: Add an Icon
-
-To add a custom icon, place a 128x128px PNG image named `icon.png` in this folder. Otherwise, you can remove the `icons` section from [manifest.json](manifest.json).
+To add a custom icon, place a 128x128px PNG image named `icon.png` in this folder. Otherwise, remove the `icons` section from [manifest.json](manifest.json).
 
 ## Disclaimer
 
