@@ -2,6 +2,8 @@
 
 A Chrome extension that enables zooming in Google Slides presentations during presentation mode.
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/hcfdipbanljliibhmpambhpcfifbadie?label=Chrome%20Web%20Store&logo=google-chrome)](https://chromewebstore.google.com/detail/google-slides-zoom/hcfdipbanljliibhmpambhpcfifbadie)
+
 ![Image](https://github.com/user-attachments/assets/9c51ae25-5b1d-4559-a788-82ebb2189dd3)
 
 ## Features
