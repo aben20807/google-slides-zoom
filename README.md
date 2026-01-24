@@ -11,7 +11,7 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 - Zoom in/out with keyboard shortcuts or mouse scroll
 - Smooth zoom animations with visual feedback
 - Pan around slides when zoomed in
-- Zoom range: 50% to 300%
+- Zoom range: 100% to 300%
 
 ## Installation
 
@@ -22,11 +22,13 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 
 ## Usage
 
-- **Ctrl + +** or **Ctrl + =**: Zoom in
-- **Ctrl + -**: Zoom out
-- **Ctrl + Mouse Scroll**: Smooth zoom
-- **Ctrl + 0** or **Escape**: Reset zoom
-- **Mouse Movement**: Pan when zoomed in
+| Function | Shortcut / Gesture |
+| --- | --- |
+| Zoom in | `Ctrl/Cmd` + `+` or `=` |
+| Zoom out | `Ctrl/Cmd` + `-` |
+| Smooth zoom | `Ctrl/Cmd` + mouse scroll |
+| Reset zoom | `Ctrl/Cmd` + `0`<br>or `R`<br>or Double-click (when zoomed) |
+| Pan (drag view) | Click and drag (when zoomed) |
 
 ## Technical Details
 

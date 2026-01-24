@@ -8,12 +8,18 @@
     }
 
     let currentScale = 1.0;
-    const MIN_SCALE = 0.5;
+    const MIN_SCALE = 1.0;
     const MAX_SCALE = 3.0;
     const SCALE_STEP = 0.1;
     const SCROLL_SCALE_STEP = 0.2;
     let isApplyingZoom = false;
-
+    const VIEWER_SELECTORS = [
+        '.sketchyViewerContent',
+        '.punch-viewer-content',
+        '.punch-viewer-container',
+        '.punch-viewer-page',
+        '.punch-viewer-svgpage'
+    ];
     // Pan variables
     let panX = 0;
     let panY = 0;
@@ -26,7 +32,41 @@
 
     // Function to find the viewer content element
     function getViewerContent() {
-        return document.querySelector('.sketchyViewerContent');
+        for (const selector of VIEWER_SELECTORS) {
+            const viewer = document.querySelector(selector);
+            if (viewer) {
+                return viewer;
+            }
+        }
+        return null;
+    }
+
+    function isEditableTarget(target) {
+        if (!target) return false;
+        if (target.isContentEditable) return true;
+        const tag = target.tagName;
+        return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function clampPan() {
+        const viewer = getViewerContent();
+        if (!viewer) return;
+
+        const baseWidth = viewer.offsetWidth;
+        const baseHeight = viewer.offsetHeight;
+        if (!baseWidth || !baseHeight) return;
+
+        const scaledWidth = baseWidth * currentScale;
+        const scaledHeight = baseHeight * currentScale;
+        const maxPanX = Math.max(0, (scaledWidth - window.innerWidth) / 2);
+        const maxPanY = Math.max(0, (scaledHeight - window.innerHeight) / 2);
+
+        panX = clamp(panX, -maxPanX, maxPanX);
+        panY = clamp(panY, -maxPanY, maxPanY);
     }
 
     // Function to create/remove pan overlay
@@ -66,6 +106,7 @@
                     panX = lastPanX + deltaX;
                     panY = lastPanY + deltaY;
 
+                    clampPan();
                     updatePan();
                     e.preventDefault();
                 });
@@ -79,6 +120,12 @@
                 panOverlay.addEventListener('mouseleave', () => {
                     isDragging = false;
                     panOverlay.style.cursor = 'grab';
+                });
+
+                panOverlay.addEventListener('dblclick', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    resetZoom();
                 });
 
                 document.body.appendChild(panOverlay);
@@ -111,6 +158,7 @@
             panY = 0;
         }
 
+        clampPan();
         viewer.style.transition = 'transform 0.2s ease-out';
         viewer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
         viewer.style.transformOrigin = 'center center';
@@ -128,6 +176,7 @@
         const viewer = getViewerContent();
         if (!viewer) return;
 
+        clampPan();
         viewer.style.transition = 'none';
         viewer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
     }
@@ -175,21 +224,30 @@
 
     // Handle keyboard events
     function handleKeydown(e) {
-        if (!e.ctrlKey && !e.metaKey) return;
+        if (isEditableTarget(e.target)) return;
 
-        if (e.key === '+' || e.key === '=') {
+        const isModified = e.ctrlKey || e.metaKey;
+
+        if (isModified && (e.key === '+' || e.key === '=')) {
             e.preventDefault();
             e.stopPropagation();
             applyZoom(currentScale + SCALE_STEP);
             return false;
         }
-        else if (e.key === '-' || e.key === '_') {
+        else if (isModified && (e.key === '-' || e.key === '_')) {
             e.preventDefault();
             e.stopPropagation();
             applyZoom(currentScale - SCALE_STEP);
             return false;
         }
-        else if (e.key === '0') {
+        else if (isModified && e.key === '0') {
+            e.preventDefault();
+            e.stopPropagation();
+            resetZoom();
+            return false;
+        }
+        else if (!isModified && (e.key === 'r' || e.key === 'R')) {
+            if (currentScale === 1.0) return;
             e.preventDefault();
             e.stopPropagation();
             resetZoom();
@@ -209,13 +267,6 @@
         return false;
     }
 
-    // Handle Escape key to reset zoom
-    function handleEscape(e) {
-        if (e.key === 'Escape' && currentScale !== 1.0) {
-            resetZoom();
-        }
-    }
-
     // Initialize the extension
     function init() {
         // Wait for the viewer to be available
@@ -226,8 +277,13 @@
 
                 // Add event listeners
                 document.addEventListener('keydown', handleKeydown, true);
-                document.addEventListener('keydown', handleEscape, true);
                 document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+                window.addEventListener('resize', () => {
+                    if (currentScale > 1.0) {
+                        clampPan();
+                        updatePan();
+                    }
+                });
 
                 console.log('Google Slides Zoom extension activated');
             }
