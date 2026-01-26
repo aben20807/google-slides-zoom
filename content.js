@@ -8,11 +8,14 @@
     }
 
     let currentScale = 1.0;
-    const MIN_SCALE = 1.0;
-    const MAX_SCALE = 3.0;
-    const SCALE_STEP = 0.1;
-    const SCROLL_SCALE_STEP = 0.2;
+    // Default settings (will be overridden by stored settings)
+    let MIN_SCALE = 1.0;
+    let MAX_SCALE = 3.0;
+    let SCALE_STEP = 0.1;
+    let SCROLL_SCALE_STEP = 0.2;
+    let PAN_BOUNDARY = 0.5;
     let isApplyingZoom = false;
+    let settingsLoaded = false;
     const VIEWER_SELECTORS = [
         '.sketchyViewerContent',
         '.punch-viewer-content',
@@ -60,13 +63,30 @@
         const baseHeight = viewer.offsetHeight;
         if (!baseWidth || !baseHeight) return;
 
+        // No panning needed at 1x zoom
+        if (currentScale <= 1.0) {
+            panX = 0;
+            panY = 0;
+            return;
+        }
+
         const scaledWidth = baseWidth * currentScale;
         const scaledHeight = baseHeight * currentScale;
         
-        // Limit panning to half the slide dimensions
-        // This allows users to drag to show 1/4 of the slide in each corner
-        const maxPanX = scaledWidth / 2;
-        const maxPanY = scaledHeight / 2;
+        // Base pan limit: pan until edge of zoomed content reaches edge of viewport
+        const basePanX = Math.max(0, (scaledWidth - window.innerWidth) / 2);
+        const basePanY = Math.max(0, (scaledHeight - window.innerHeight) / 2);
+        
+        // Additional pan allowed beyond content edges based on boundary factor
+        // PAN_BOUNDARY of 0 = can only pan to see content edges (no overflow)
+        // PAN_BOUNDARY of 0.5 = can pan half the slide off-screen
+        // PAN_BOUNDARY of 1.0 = can pan entire slide off-screen
+        const boundaryFactor = PAN_BOUNDARY || 0;
+        const boundaryPanX = baseWidth * boundaryFactor;
+        const boundaryPanY = baseHeight * boundaryFactor;
+        
+        const maxPanX = basePanX + boundaryPanX;
+        const maxPanY = basePanY + boundaryPanY;
 
         panX = clamp(panX, -maxPanX, maxPanX);
         panY = clamp(panY, -maxPanY, maxPanY);
@@ -270,30 +290,61 @@
         return false;
     }
 
+    // Load settings from storage
+    function loadSettings(callback) {
+        const defaults = {
+            minScale: 1.0,
+            maxScale: 3.0,
+            scaleStep: 0.1,
+            scrollScaleStep: 0.2,
+            panBoundary: 0.5
+        };
+
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+            chrome.storage.sync.get(defaults, (settings) => {
+                MIN_SCALE = settings.minScale;
+                MAX_SCALE = settings.maxScale;
+                SCALE_STEP = settings.scaleStep;
+                SCROLL_SCALE_STEP = settings.scrollScaleStep;
+                PAN_BOUNDARY = settings.panBoundary;
+                settingsLoaded = true;
+                console.log('Google Slides Zoom settings loaded:', settings);
+                if (callback) callback();
+            });
+        } else {
+            // Use defaults if storage is not available
+            settingsLoaded = true;
+            if (callback) callback();
+        }
+    }
+
     // Initialize the extension
     function init() {
-        // Wait for the viewer to be available
-        const checkViewer = setInterval(() => {
-            const viewer = getViewerContent();
-            if (viewer) {
-                clearInterval(checkViewer);
+        // Load settings first, then initialize
+        loadSettings(() => {
+            // Wait for the viewer to be available
+            const checkViewer = setInterval(() => {
+                const viewer = getViewerContent();
+                if (viewer) {
+                    clearInterval(checkViewer);
 
-                // Add event listeners
-                document.addEventListener('keydown', handleKeydown, true);
-                document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-                window.addEventListener('resize', () => {
-                    if (currentScale > 1.0) {
-                        clampPan();
-                        updatePan();
-                    }
-                });
+                    // Add event listeners
+                    document.addEventListener('keydown', handleKeydown, true);
+                    document.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+                    window.addEventListener('resize', () => {
+                        if (currentScale > 1.0) {
+                            clampPan();
+                            updatePan();
+                        }
+                    });
 
-                console.log('Google Slides Zoom extension activated');
-            }
-        }, 500);
+                    console.log('Google Slides Zoom extension activated');
+                }
+            }, 500);
 
-        // Stop checking after 10 seconds
-        setTimeout(() => clearInterval(checkViewer), 10000);
+            // Stop checking after 10 seconds
+            setTimeout(() => clearInterval(checkViewer), 10000);
+        });
     }
 
     // Wait for the page to be fully loaded
