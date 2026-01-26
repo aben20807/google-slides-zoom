@@ -15,15 +15,8 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Google Slides Zoom Options"
-  },
-  "options_page": "options.html",
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
-  "background": {
-    "service_worker": "background.js"
+    "default_title": "Google Slides Zoom",
+    "default_popup": "popup.html"
   },
   "content_scripts": [
     {
