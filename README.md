@@ -10,8 +10,14 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 
 - Zoom in/out with keyboard shortcuts or mouse scroll
 - Smooth zoom animations with visual feedback
-- Pan around slides when zoomed in
-- Zoom range: 100% to 300%
+- Pan around slides when zoomed in by dragging
+- Customizable zoom range, steps, and pan boundaries
+- Simple popup settings interface
+- Configurable limits:
+  - Zoom range: adjustable (default 100% to 300%)
+  - Keyboard zoom step: adjustable (default 10%)
+  - Scroll zoom step: adjustable (default 20%)
+  - Pan boundary: adjustable (default 50% of slide)
 
 ## Installation
 
@@ -22,6 +28,8 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 
 ## Usage
 
+### Controls
+
 | Function | Shortcut / Gesture |
 | --- | --- |
 | Zoom in | `Ctrl/Cmd` + `+` or `=` |
@@ -30,13 +38,27 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 | Reset zoom | `Ctrl/Cmd` + `0` or `R`<br>or Double-click (when zoomed) |
 | Pan (drag view) | Click and drag (when zoomed) |
 
+### Settings
+
+Click the extension icon to open the settings popup where you can configure:
+
+- **Min Scale**: Minimum zoom level (default: 1.0 = 100%)
+- **Max Scale**: Maximum zoom level (default: 3.0 = 300%)
+- **Key Step**: Zoom increment for keyboard shortcuts (default: 0.1 = 10%)
+- **Scroll Step**: Zoom increment for mouse scroll (default: 0.2 = 20%)
+- **Pan Boundary**: How far you can drag the slide off-screen
+  - `0` = Can only pan to see content edges (no overflow)
+  - `0.5` = Can pan half the slide off-screen (default)
+  - `1.0` = Can pan entire slide off-screen
+
+After changing settings, refresh your Google Slides presentation to apply changes.
+
 ## Technical Details
 
-Applies CSS `transform: scale()` to `.sketchyViewerContent` with smooth transitions.
-
-## Optional Icon
-
-To add a custom icon, place a 128x128px PNG image named `icon.png` in this folder. Otherwise, remove the `icons` section from [manifest.json](manifest.json).
+- Applies CSS `transform: scale()` to `.sketchyViewerContent` with smooth transitions
+- Settings stored in `chrome.storage.sync` for persistence across devices
+- Pan limits dynamically calculated based on viewport size and zoom level
+- Drag-to-pan overlay prevents interaction with slide elements when zoomed
 
 ## Disclaimer
 
