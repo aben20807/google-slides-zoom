@@ -62,8 +62,11 @@
 
         const scaledWidth = baseWidth * currentScale;
         const scaledHeight = baseHeight * currentScale;
-        const maxPanX = Math.max(0, (scaledWidth - window.innerWidth) / 2);
-        const maxPanY = Math.max(0, (scaledHeight - window.innerHeight) / 2);
+        
+        // Limit panning to half the slide dimensions
+        // This allows users to drag to show 1/4 of the slide in each corner
+        const maxPanX = scaledWidth / 2;
+        const maxPanY = scaledHeight / 2;
 
         panX = clamp(panX, -maxPanX, maxPanX);
         panY = clamp(panY, -maxPanY, maxPanY);

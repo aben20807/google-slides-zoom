@@ -26,8 +26,8 @@ A Chrome extension that enables zooming in Google Slides presentations during pr
 | --- | --- |
 | Zoom in | `Ctrl/Cmd` + `+` or `=` |
 | Zoom out | `Ctrl/Cmd` + `-` |
-| Smooth zoom | `Ctrl/Cmd` + mouse scroll |
-| Reset zoom | `Ctrl/Cmd` + `0`<br>or `R`<br>or Double-click (when zoomed) |
+| Smooth zoom | `Ctrl/Cmd` + mouse scroll / touchpad pinch |
+| Reset zoom | `Ctrl/Cmd` + `0` or `R`<br>or Double-click (when zoomed) |
 | Pan (drag view) | Click and drag (when zoomed) |
 
 ## Technical Details
